@@ -865,7 +865,7 @@ impl Inner {
         ))?;
 
         // Nothing else to do, track the task
-        self.actions.task = Some(cx.waker().clone());
+        self.actions.task = Some(dbg!(cx.waker().clone()));
 
         Poll::Ready(Ok(()))
     }

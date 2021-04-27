@@ -1275,8 +1275,9 @@ where
     type Output = Result<(), crate::Error>;
 
     fn poll(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output> {
+        tracing::debug!("entered poll");
         self.inner.maybe_close_connection_if_no_streams();
-        self.inner.poll(cx).map_err(Into::into)
+        dbg!(self.inner.poll(cx).map_err(Into::into))
     }
 }
 

@@ -120,7 +120,7 @@ impl Prioritize {
 
             // Notify the connection.
             if let Some(task) = task.take() {
-                task.wake();
+                dbg!(task).wake();
             }
         }
     }

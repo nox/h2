@@ -230,6 +230,7 @@ where
 
     /// Advances the internal state of the connection.
     pub fn poll(&mut self, cx: &mut Context) -> Poll<Result<(), proto::Error>> {
+        tracing::debug!("entered inner poll");
         // XXX(eliza): cloning the span is unfortunately necessary here in
         // order to placate the borrow checker — `self` is mutably borrowed by
         // `poll2`, which means that we can't borrow `self.span` to enter it.
@@ -240,19 +241,21 @@ where
         let _e = span.enter();
 
         loop {
+            tracing::debug!("entered inner poll loop");
             tracing::trace!(connection.state = ?self.inner.state);
             // TODO: probably clean up this glob of code
+            dbg!(&self.inner.state);
             match self.inner.state {
                 // When open, continue to poll a frame
                 State::Open => {
-                    let result = match self.poll2(cx) {
+                    let result = match dbg!(self.poll2(cx)) {
                         Poll::Ready(result) => result,
                         // The connection is not ready to make progress
                         Poll::Pending => {
                             // Ensure all window updates have been sent.
                             //
                             // This will also handle flushing `self.codec`
-                            ready!(self.inner.streams.poll_complete(cx, &mut self.codec))?;
+                            ready!(dbg!(self.inner.streams.poll_complete(cx, &mut self.codec)))?;
 
                             if (self.inner.error.is_some()
                                 || self.inner.go_away.should_close_on_idle())
